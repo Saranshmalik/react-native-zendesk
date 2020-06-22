@@ -68,12 +68,15 @@ RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
 }
 
 RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
-  NSLog(@"Some error here %@", options);
   [ZDKZendesk initializeWithAppId:options[@"appId"]
       clientId: options[@"clientId"]
       zendeskUrl: options[@"url"]];
   [ZDKSupport initializeWithZendesk: [ZDKZendesk instance]];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
+  [ZDKChat initializeWithAccountKey:options[@"key"] queue:dispatch_get_main_queue()];
+}
+
+RCT_EXPORT_METHOD(initChat:(NSString *)key) {
   [ZDKChat initializeWithAccountKey:options[@"key"] queue:dispatch_get_main_queue()];
 }
 
