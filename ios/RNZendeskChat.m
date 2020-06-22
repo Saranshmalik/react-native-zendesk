@@ -58,13 +58,13 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
 
 RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
   if (user[@"token"]) {
-    id<ZDKObjCIdentity> userIdentity = [[ZDKObjCJwt alloc] initWithToken:options[@"token"]];
+    id<ZDKObjCIdentity> userIdentity = [[ZDKObjCJwt alloc] initWithToken:user[@"token"]];
+    [[ZDKZendesk instance] setIdentity:userIdentity];
   } else {
-  id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:user[@"name"] // name is nullable
-                                            email:user[@"email"]]; // email is nullable
+    id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:user[@"name"] // name is nullable
+                                          email:user[@"email"]]; // email is nullable
+    [[ZDKZendesk instance] setIdentity:userIdentity];
   }
-
-  [[ZDKZendesk instance] setIdentity:userIdentity];
 }
 
 RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
@@ -77,7 +77,7 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
 }
 
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
-  [ZDKChat initializeWithAccountKey:options[@"key"] queue:dispatch_get_main_queue()];
+  [ZDKChat initializeWithAccountKey:key queue:dispatch_get_main_queue()];
 }
 
 - (UIColor *)colorFromHexString:(NSString *)hexString {
@@ -92,8 +92,15 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
     [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:options[@"color"]];
 
     ZDKMessagingConfiguration *messagingConfiguration = [ZDKMessagingConfiguration new];
-    messagingConfiguration.name = options[@"botName"];
-    messagingConfiguration.botAvatar = options[@"botImage"];
+    NSString *botName = @"ChatBot";
+    if (options[@"botName"]) {
+      botName = options[@"botName"];
+    }
+    messagingConfiguration.name = botName;
+
+    if (options[@"botImage"]) {
+      messagingConfiguration.botAvatar = options[@"botImage"];
+    }
 
     NSError *error = nil;
     NSMutableArray *engines = [[NSMutableArray alloc] init];
@@ -127,8 +134,6 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
         }
 
         UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
-        topController.view.backgroundColor = [self colorFromHexString:options[@"color"]];
-        navControl.view.backgroundColor = [self colorFromHexString:options[@"color"]];
         [topController presentViewController:navControl animated:YES completion:nil];
 }
 
