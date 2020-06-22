@@ -15,11 +15,11 @@ It's an alpha version release as of now and only tested on RN >=0.61.0. Bugs and
 
 1. With npm:
 
-   `npm install react-native-zendesk --save`
+   `npm install @saranshmalik/react-native-zendesk`
 
    or with yarn:
 
-   `yarn add react-native-zendesk`
+   `yarn add @saranshmalik/react-native-zendesk`
 
 #### iOS
 
