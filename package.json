@@ -1,0 +1,29 @@
+{
+  "name": "react-native-zendesk",
+  "version": "0.1.0",
+  "description": "React native wrapper for Zendesk Unified SDK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Saranshmalik/react-native-zendesk.git"
+  },
+  "keywords": [
+    "react-native",
+    "zendesk",
+    "zendesk-chat",
+    "react-native-zendesk",
+    "zendesk-chat-v2",
+    "chat",
+    "zendesk unified sdkv2"
+  ],
+  "homepage": "https://github.com/Saranshmalik/react-native-zendesk.git",
+  "author": "Saranshmalik",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.11.0",
+    "react-native": "^0.60.0"
+  }
+}
