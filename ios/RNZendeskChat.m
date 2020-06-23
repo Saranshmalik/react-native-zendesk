@@ -56,6 +56,13 @@ RCT_EXPORT_METHOD(startChat:(NSDictionary *)options) {
   });
 }
 
+RCT_EXPORT_METHOD(showHelpCenter:(NSDictionary *)options) {
+  [self setVisitorInfo:options];
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [self showHelpCenterFunction:options];
+  });
+}
+
 RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
   if (user[@"token"]) {
     id<ZDKObjCIdentity> userIdentity = [[ZDKObjCJwt alloc] initWithToken:user[@"token"]];
@@ -88,6 +95,38 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
+- (void) showHelpCenterFunction:(NSDictionary *)options {
+    [ZDKCoreLogger setEnabled:YES];
+    [ZDKCoreLogger setLogLevel:ZDKLogLevelDebug];
+    NSError *error = nil;
+    ZDKChatEngine *chatEngine = [ZDKChatEngine engineAndReturnError:&error];
+    ZDKSupportEngine *supportEngine = [ZDKSupportEngine engineAndReturnError:&error];
+    NSArray *engines = @[];
+    ZDKMessagingConfiguration *messagingConfiguration = [ZDKMessagingConfiguration new];
+    NSString *botName = @"ChatBot";
+    if (options[@"botName"]) {
+      botName = options[@"botName"];
+    }
+    if (options[@"withChat"]) {
+      engines = @[(id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error], (id <ZDKEngine>) supportEngine];
+    }
+    ZDKHelpCenterUiConfiguration* helpCenterUiConfig = [ZDKHelpCenterUiConfiguration new];
+    UIViewController* controller = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs: @[helpCenterUiConfig]];
+    controller.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle: @"Close"
+                                                                                       style: UIBarButtonItemStylePlain
+                                                                                      target: self
+                                                                                      action: @selector(chatClosedClicked)];
+
+
+    UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+    while (topController.presentedViewController) {
+        topController = topController.presentedViewController;
+    }
+
+    UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
+    [topController presentViewController:navControl animated:YES completion:nil];
+}
+
 - (void) startChatFunction:(NSDictionary *)options {
     [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:options[@"color"]];
 
@@ -111,8 +150,8 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
     } else {
       engines = @[
         (id <ZDKEngine>) [ZDKAnswerBotEngine engineAndReturnError:&error],
-        (id <ZDKEngine>) [ZDKSupportEngine engineAndReturnError:&error], 
         (id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error],
+        (id <ZDKEngine>) [ZDKSupportEngine engineAndReturnError:&error], 
       ];
     }
 
