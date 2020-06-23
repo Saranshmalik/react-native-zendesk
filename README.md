@@ -77,7 +77,9 @@ Step 2. Set user identifier
     })
 ```
 
-Step 3. When you want to show up the chat dialog use the following code :
+Step 3. Show the UI based on what SDK you want to use
+### Chat SDK
+** To use chat sdk without answer bot, please add `chatOnly: true` in this method
 ```
     ZendeskChat.startChat({
       name: user.full_name,
@@ -98,8 +100,17 @@ Step 3. When you want to show up the chat dialog use the following code :
 | botName | The botname you want to show on your chat |
 | color | Primary color (hex code) for chat bubbles only on iOS |
 
-### Styling
-For styling in android create a theme with name `ZendeskTheme` in your AndroidManifest.xml file with the following properties
+### Help Center (with and Without Chat SDK)
+To initiate and display help center use the following method:
+```
+RNZendesk.showHelpCenter({
+      withChat: true // add this if you want to use chat instead of ticket creation
+})
+```
+Working on currently adding more config options here and add customising properties.
+
+### Customising Looks
+For styling in android create a theme in your android folder with the following properties
 ```
 <style  name="ZendeskTheme"  parent="Theme.MaterialComponents.Light">
 
@@ -111,12 +122,36 @@ For styling in android create a theme with name `ZendeskTheme` in your AndroidMa
 
 </style>
 ```
+And then add following to your project's AndroidManifest.xml file (use only the SDKs you use)
+```
+      <activity android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.requestlist.RequestListActivity"
+            android:theme="@style/ZendeskTheme" />
+        <activity android:name="zendesk.messaging.MessagingActivity"
+            android:theme="@style/ZendeskTheme" />
+```
+
 For iOS only passing color in startChat function is supported at the moment working on adding more configuration in that.
+
 ## TODO
 
+- ~~Add Help center
 - Allow setting form configuration from JS
 - Add examples
 - Allowing more native methods for updating visitorInfo
+- Adding customisation of SDK support
+- Exposing individual methods to support all SDKs and different combinations
+- Add more support of dynamic properties
+
+Contributions and PRs are always welcome.
 
 ## License
 
