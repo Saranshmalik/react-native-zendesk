@@ -143,7 +143,7 @@ For iOS only passing color in startChat function is supported at the moment work
 
 ## TODO
 
-- ~~Add Help center
+- ~~Add Help center~~
 - Allow setting form configuration from JS
 - Add examples
 - Allowing more native methods for updating visitorInfo
