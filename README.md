@@ -15,11 +15,11 @@ It's an alpha version release as of now and only tested on RN >=0.61.0. Bugs and
 
 1. With npm:
 
-   `npm install react-native-zendesk --save`
+   `npm install react-native-zendesk-v2`
 
    or with yarn:
 
-   `yarn add react-native-zendesk`
+   `yarn add react-native-zendesk-v2`
 
 #### iOS
 
@@ -77,7 +77,9 @@ Step 2. Set user identifier
     })
 ```
 
-Step 3. When you want to show up the chat dialog use the following code :
+Step 3. Show the UI based on what SDK you want to use
+### Chat SDK
+** To use chat sdk without answer bot, please add `chatOnly: true` in this method
 ```
     ZendeskChat.startChat({
       name: user.full_name,
@@ -98,8 +100,21 @@ Step 3. When you want to show up the chat dialog use the following code :
 | botName | The botname you want to show on your chat |
 | color | Primary color (hex code) for chat bubbles only on iOS |
 
-### Styling
-For styling in android create a theme with name `ZendeskTheme` in your AndroidManifest.xml file with the following properties
+### Help Center (with and Without Chat SDK)
+To initiate and display help center use the following method:
+```
+RNZendesk.showHelpCenter({
+      withChat: true // add this if you want to use chat instead of ticket creation
+			disableTicketCreation: true // add this if you want to just show help center and not add ticket creation
+})
+```
+You can use either of these options `withChat` or `disableTicketCreation`, both can't be used together. 
+
+*NOTE: Zendesk support with chat enabled is currently buggy, I am trying to resolve that issue. At present you can show help center with normal ticket creation.*
+Working on currently adding more config options here and add customising properties.
+
+### Customising Looks
+For styling in android create a theme in your android folder with the following properties
 ```
 <style  name="ZendeskTheme"  parent="Theme.MaterialComponents.Light">
 
@@ -111,12 +126,41 @@ For styling in android create a theme with name `ZendeskTheme` in your AndroidMa
 
 </style>
 ```
-For iOS only passing color in startChat function is supported at the moment working on adding more configuration in that.
+And then add following to your project's AndroidManifest.xml file (use only the SDKs you use)
+```
+      <activity android:name="zendesk.support.guide.HelpCenterActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.guide.ViewArticleActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.request.RequestActivity"
+            android:theme="@style/ZendeskTheme" />
+
+        <activity android:name="zendesk.support.requestlist.RequestListActivity"
+            android:theme="@style/ZendeskTheme" />
+        <activity android:name="zendesk.messaging.MessagingActivity"
+            android:theme="@style/ZendeskTheme" />
+```
+
+For iOS only added a new function which can be used as below. This would set the primary color for the chat and other sdks
+```
+	RNZendesk.setPrimaryColor(<hex color string>)
+
+```
+
 ## TODO
 
+- ~~Add Help center~~
 - Allow setting form configuration from JS
 - Add examples
 - Allowing more native methods for updating visitorInfo
+- Adding customisation of SDK support
+- Exposing individual methods to support all SDKs and different combinations
+- Add more support of dynamic properties
+- More config for looks on iOS
+
+Contributions and PRs are always welcome.
 
 ## License
 

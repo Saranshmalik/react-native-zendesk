@@ -34,12 +34,14 @@ import zendesk.chat.PreChatFormFieldStatus;
 import zendesk.chat.ProfileProvider;
 import zendesk.chat.Providers;
 import zendesk.chat.VisitorInfo;
+import zendesk.core.JwtIdentity;
 import zendesk.core.AnonymousIdentity;
 import zendesk.core.Identity;
 import zendesk.messaging.MessagingActivity;
 import zendesk.core.Zendesk;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
+import zendesk.support.guide.ViewArticleActivity;
 import zendesk.support.requestlist.RequestListActivity;
 import zendesk.answerbot.AnswerBot;
 import zendesk.answerbot.AnswerBotEngine;
@@ -47,35 +49,35 @@ import zendesk.support.SupportEngine;
 
 public class RNZendeskChat extends ReactContextBaseJavaModule {
 
-  private ReactContext mReactContext;
+  private ReactContext appContext;
+  private static final String TAG = "ZendeskChat";
 
   public RNZendeskChat(ReactApplicationContext reactContext) {
         super(reactContext);
-        mReactContext = reactContext;
+        appContext = reactContext;
   }
 
   @Override
   public String getName() {
     return "RNZendeskChat";
   }
-  private final String LOG_TAP = "Zendesk";
 
   @ReactMethod
     public void setVisitorInfo(ReadableMap options) {
 
         Providers providers = Chat.INSTANCE.providers();
         if (providers == null) {
-            Log.d(LOG_TAP, "Can't set visitor info, provider is null");
+            Log.d(TAG, "Can't set visitor info, provider is null");
             return;
         }
         ProfileProvider profileProvider = providers.profileProvider();
         if (profileProvider == null) {
-            Log.d(LOG_TAP, "Profile provider is null");
+            Log.d(TAG, "Profile provider is null");
             return;
         }
         ChatProvider chatProvider = providers.chatProvider();
         if (chatProvider == null) {
-            Log.d(LOG_TAP, "Chat provider is null");
+            Log.d(TAG, "Chat provider is null");
             return;
         }
         VisitorInfo.Builder builder = VisitorInfo.builder();
@@ -101,29 +103,52 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         String clientId = options.getString("clientId");
         String url = options.getString("url");
         String key = options.getString("key");
-        Context context = mReactContext;
+        Context context = appContext;
         Zendesk.INSTANCE.init(context, url, appId, clientId);
         Support.INSTANCE.init(Zendesk.INSTANCE);
+        AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE);
         Chat.INSTANCE.init(context, key);
     }
 
     @ReactMethod
     public void initChat(String key) {
-        Context context = mReactContext;
+        Context context = appContext;
         Chat.INSTANCE.init(context, key);
     }
 
     @ReactMethod
     public void setUserIdentity(ReadableMap options) {
-        if (options.hasKey('token')) {
+        if (options.hasKey("token")) {
           Identity identity = new JwtIdentity(options.getString("token"));
+          Zendesk.INSTANCE.setIdentity(identity);
         } else {
           String name = options.getString("name");
           String email = options.getString("email");
           Identity identity = new AnonymousIdentity.Builder()
                   .withNameIdentifier(name).withEmailIdentifier(email).build();
+          Zendesk.INSTANCE.setIdentity(identity);
+        }   
+    }
+
+    @ReactMethod
+    public void showHelpCenter(ReadableMap options) {
+        String botName = options.hasKey("botName") ? options.getString("botName") : "Chat Bot";
+        Activity activity = getCurrentActivity();
+        if (options.hasKey("withChat")) {
+            HelpCenterActivity.builder()
+             .withEngines(ChatEngine.engine())
+             .show(activity);
+        } else if (options.hasKey("disableTicketCreation")) {
+            HelpCenterActivity.builder()
+              .withContactUsButtonVisible(false)
+              .withShowConversationsMenuButton(false)
+              .show(activity, ViewArticleActivity.builder()
+                                                 .withContactUsButtonVisible(false)
+                                                 .config());
+        } else {
+            HelpCenterActivity.builder()
+             .show(activity);
         }
-        Zendesk.INSTANCE.setIdentity(identity);
     }
 
     @ReactMethod
@@ -131,22 +156,22 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         Providers providers = Chat.INSTANCE.providers();
         setUserIdentity(options);
         setVisitorInfo(options);
-        String botName = options.getString('botName')
+        String botName = options.getString("botName");
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
                 .withAgentAvailabilityEnabled(true)
                 .withOfflineFormEnabled(true)
                 .build();
 
         Activity activity = getCurrentActivity();
-        if (options.hasKey('chatOnly')) {
+        if (options.hasKey("chatOnly")) {
            MessagingActivity.builder()
                     .withBotLabelString(botName)
-                    .withEngines(ChatEngine.engine())
+                    .withEngines(ChatEngine.engine(), SupportEngine.engine())
                     .show(activity, chatConfiguration);
         } else {
             MessagingActivity.builder()
                     .withBotLabelString(botName)
-                    .withEngines(AnswerBotEngine.engine(), SupportEngine.engine(), ChatEngine.engine())
+                    .withEngines(AnswerBotEngine.engine(), ChatEngine.engine(), SupportEngine.engine())
                     .show(activity, chatConfiguration);
         }
       
