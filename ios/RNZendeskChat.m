@@ -88,10 +88,13 @@ RCT_EXPORT_METHOD(initChat:(NSString *)key) {
   [ZDKChat initializeWithAccountKey:key queue:dispatch_get_main_queue()];
 }
 
+<<<<<<< HEAD
 RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
   [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:color];
 }
 
+=======
+>>>>>>> 0197a93e1397af27dbf285d111f2f286df8d6745
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
@@ -126,7 +129,6 @@ RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
     //                                                                                    style: UIBarButtonItemStylePlain
     //                                                                                   target: self
     //                                                                                   action: @selector(chatClosedClicked)];
-
 
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {

@@ -1,5 +1,7 @@
 
-# react-native-zendesk
+# react-native-zendesk [![npm version](https://badge.fury.io/js/react-native-zendesk-v2.svg)](https://badge.fury.io/js/react-native-zendesk-v2)
+[![NPM](https://nodei.co/npm/react-native-zendesk-v2.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/react-native-zendesk-v2/)
+
 React native wrapper for zendesk unified SDK. Supports both iOS and Android platforms.
 
 # NOTICE
