@@ -36,8 +36,6 @@ It's an alpha version release as of now and only tested on RN >=0.61.0. Bugs and
 
 #### Android
 
-For android currently one small addition is needed on root build.gradle (Trying to fix this up, let me know if you have suggestions for it)
-
 You need to add this in your root build.gradle under allProjects -> repositories file of the project.
 `maven { url 'https://zendesk.jfrog.io/zendesk/repo' }`
 
