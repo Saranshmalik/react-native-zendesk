@@ -159,6 +159,7 @@ For iOS only added a new function which can be used as below. This would set the
 - Exposing individual methods to support all SDKs and different combinations
 - Add more support of dynamic properties
 - More config for looks on iOS
+- Add support for PushNotifications
 
 Contributions and PRs are always welcome.
 
