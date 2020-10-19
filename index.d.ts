@@ -18,6 +18,9 @@ declare module 'react-native-zendesk-v2' {
   // function to set visitor info in chat
   export function setVisitorInfo(visitorInfo: UserInfo): void;
 
+  // function to register notifications token with zendesk
+  export function setNotificationToken(token: string): void;
+  
   interface ChatOptions extends UserInfo {
     botName?: string
     // boolean value if you want just chat sdk or want to use all the sdk like support, answer bot and chat
