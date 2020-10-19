@@ -149,6 +149,13 @@ For iOS only added a new function which can be used as below. This would set the
 
 ```
 
+### Push notifications
+For push notifications added a method to register token in Zendesk, all other handling and stuff needs to be done on the app itself.
+To register your token with Zendesk call
+```
+RNZendesk.setNotificationToken(<your token>)
+```
+
 ## TODO
 
 - ~~Add Help center~~
