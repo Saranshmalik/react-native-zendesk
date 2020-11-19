@@ -24,14 +24,12 @@ jobs:
         node-version: 12
         # Specifies the registry, this field is required!
         registry-url: https://registry.npmjs.org/
-    # clean install of your projects' deps. We use "npm ci" to avoid package lock changes
-    - run: npm ci
     # set up git since we will later push to the repo
     - run: git config --global user.name "Saranshmalik"
     - run: git config --global user.email "saranshmalik63@gmail.com"
     # upgrade npm version in package.json to the tag used in the release.
     - run: npm version ${{ github.event.release.tag_name }}
-    # publish to NPM -> there is one caveat, continue reading for the fix
+    # publish to NPM
     - run: npm publish
       env:
         # Use a token to publish to NPM. See below for how to set it up
