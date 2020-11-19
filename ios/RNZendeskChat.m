@@ -92,6 +92,12 @@ RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
   [ZDKCommonTheme currentTheme].primaryColor = [self colorFromHexString:color];
 }
 
+RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [self registerForNotifications:deviceToken];
+  });
+}
+
 - (UIColor *)colorFromHexString:(NSString *)hexString {
     unsigned rgbValue = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
@@ -193,4 +199,9 @@ RCT_EXPORT_METHOD(setPrimaryColor:(NSString *)color) {
     }
     [topController dismissViewControllerAnimated:TRUE completion:NULL];
 }
+
+- (void) registerForNotifications:(NSData *)deviceToken {
+   [ZDKChat registerPushToken:deviceToken];
+}
+
 @end

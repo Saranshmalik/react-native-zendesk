@@ -4,10 +4,6 @@
 
 React native wrapper for zendesk unified SDK. Supports both iOS and Android platforms.
 
-# NOTICE
-This is my very first npm package and I am still a newbie. Anyone if has suggestions/improvements or any feature PRs you are most welcome, would love to get make the package as much generalised for everyone as possible. Only very basic stuff is supported at this moment.
-
-
 ## VERSIONS
 It's an alpha version release as of now and only tested on RN >=0.61.0. Bugs and issues can be there.
 
@@ -51,10 +47,10 @@ Place this code at the root of your application to initialize Zendesk SDK.
 For all supported SDKs
 ```javascript
 RNZendeskChat.init({
-      key: <chatAccountKey>,
-      appId: <appId>,
-      url: <zendeskUrl>,
-      clientId: <zendeskClientId>,
+	key: <chatAccountKey>,
+	appId: <appId>,
+	url: <zendeskUrl>,
+	clientId: <zendeskClientId>,
 })
 ```
 
@@ -65,29 +61,29 @@ Step 2. Set user identifier
 - If your chat just runs behind a login you can pass in name and email whenever user logins if not, pass a JWT Token to identify the user on chat
 
 ```
-    RNZendeskChat.setUserIdentity({
-        name: <name>,
-        email: <email>,
-    })
+	RNZendeskChat.setUserIdentity({
+		name: <name>,
+		email: <email>,
+	})
  ```
 - If you want to start chat without any user details you can use a JWT token.
 ```
-    RNZendeskChat.setUserIdentity({
+	RNZendeskChat.setUserIdentity({
 		token: <JWT TOKEN>
-    })
+	})
 ```
 
 Step 3. Show the UI based on what SDK you want to use
 ### Chat SDK
 ** To use chat sdk without answer bot, please add `chatOnly: true` in this method
 ```
-    ZendeskChat.startChat({
-      name: user.full_name,
-      email: user.email,
-      phone: user.mobile_phone,
-      tags: ['tag1', 'tag2'],
-      department: "Your department"
-    });
+	ZendeskChat.startChat({
+		name: user.full_name,
+		email: user.email,
+		phone: user.mobile_phone,
+		tags: ['tag1', 'tag2'],
+		department: "Your department"
+	});
 ```
 | Props  | Description |
 |--|--|
@@ -104,8 +100,8 @@ Step 3. Show the UI based on what SDK you want to use
 To initiate and display help center use the following method:
 ```
 RNZendesk.showHelpCenter({
-      withChat: true // add this if you want to use chat instead of ticket creation
-			disableTicketCreation: true // add this if you want to just show help center and not add ticket creation
+	withChat: true // add this if you want to use chat instead of ticket creation
+	disableTicketCreation: true // add this if you want to just show help center and not add ticket creation
 })
 ```
 You can use either of these options `withChat` or `disableTicketCreation`, both can't be used together. 
@@ -149,6 +145,14 @@ For iOS only added a new function which can be used as below. This would set the
 
 ```
 
+### Push notifications
+For push notifications added a method to register token in Zendesk, all other handling and stuff needs to be done on the app itself.
+To register your token with Zendesk call
+```
+	RNZendesk.setNotificationToken(<your token>)
+```
+
+
 ## TODO
 
 - ~~Add Help center~~
@@ -159,7 +163,7 @@ For iOS only added a new function which can be used as below. This would set the
 - Exposing individual methods to support all SDKs and different combinations
 - Add more support of dynamic properties
 - More config for looks on iOS
-- Add support for PushNotifications
+- ~~Add support for PushNotifications~~
 
 Contributions and PRs are always welcome.
 

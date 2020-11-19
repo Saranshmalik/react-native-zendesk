@@ -32,6 +32,7 @@ import zendesk.chat.ObservationScope;
 import zendesk.chat.Observer;
 import zendesk.chat.PreChatFormFieldStatus;
 import zendesk.chat.ProfileProvider;
+import zendesk.chat.PushNotificationsProvider;
 import zendesk.chat.Providers;
 import zendesk.chat.VisitorInfo;
 import zendesk.core.JwtIdentity;
@@ -156,6 +157,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         Providers providers = Chat.INSTANCE.providers();
         setUserIdentity(options);
         setVisitorInfo(options);
+        setUserIdentity(options);
         String botName = options.getString("botName");
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
                 .withAgentAvailabilityEnabled(true)
@@ -175,5 +177,13 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
                     .show(activity, chatConfiguration);
         }
       
+    }
+
+    @ReactMethod
+    public void setNotificationToken(String token) {
+        PushNotificationsProvider pushProvider = Chat.INSTANCE.providers().pushNotificationsProvider();
+        if (pushProvider != null) {
+            pushProvider.registerPushToken(token);
+        }
     }
 }
