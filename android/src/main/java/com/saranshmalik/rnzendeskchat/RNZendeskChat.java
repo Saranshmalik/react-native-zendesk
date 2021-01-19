@@ -17,9 +17,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.lang.String;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import zendesk.chat.Chat;
@@ -42,6 +45,7 @@ import zendesk.messaging.MessagingActivity;
 import zendesk.core.Zendesk;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
+import zendesk.support.guide.HelpCenterConfiguration;
 import zendesk.support.guide.ViewArticleActivity;
 import zendesk.support.requestlist.RequestListActivity;
 import zendesk.answerbot.AnswerBot;
@@ -133,23 +137,47 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void showHelpCenter(ReadableMap options) {
-        String botName = options.hasKey("botName") ? options.getString("botName") : "Chat Bot";
-        Activity activity = getCurrentActivity();
-        if (options.hasKey("withChat")) {
-            HelpCenterActivity.builder()
-             .withEngines(ChatEngine.engine())
-             .show(activity);
-        } else if (options.hasKey("disableTicketCreation")) {
-            HelpCenterActivity.builder()
-              .withContactUsButtonVisible(false)
-              .withShowConversationsMenuButton(false)
-              .show(activity, ViewArticleActivity.builder()
-                                                 .withContactUsButtonVisible(false)
-                                                 .config());
-        } else {
-            HelpCenterActivity.builder()
-             .show(activity);
+        ReadableArray sectionIds = options.getArray("sectionIds");
+
+        List<Long> sectionIdsList = null;
+
+        if(sectionIds != null) {
+            sectionIdsList = new ArrayList<Long>();
+
+            for (int i = 0; i < sectionIds.size(); i++) {
+                String str = sectionIds.getString(i);
+                if(str != null) {
+                    Long lng = Long.parseLong(str);
+                    sectionIdsList.add(lng);
+                }
+            }
         }
+
+
+        Activity activity = getCurrentActivity();
+
+        HelpCenterConfiguration.Builder builder = HelpCenterActivity.builder();
+
+        if (options.hasKey("withChat")) {
+            builder.withEngines(ChatEngine.engine());
+        }
+
+        if(sectionIds != null){
+            builder.withArticlesForSectionIds(sectionIdsList);
+        }
+
+        if (options.hasKey("disableTicketCreation")) {
+            builder
+                .withContactUsButtonVisible(false)
+                .withShowConversationsMenuButton(false)
+                .show(activity, ViewArticleActivity.builder()
+                    .withContactUsButtonVisible(false)
+                    .config()
+                );
+        } else {
+            builder.show(activity);
+        }
+
     }
 
     @ReactMethod
