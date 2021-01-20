@@ -119,6 +119,10 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     if (options[@"withChat"]) {
       engines = @[(id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error]];
     }
+    
+    
+   
+    
     ZDKHelpCenterUiConfiguration* helpCenterUiConfig = [ZDKHelpCenterUiConfiguration new];
     helpCenterUiConfig.objcEngines = engines;
     ZDKArticleUiConfiguration* articleUiConfig = [ZDKArticleUiConfiguration new];
@@ -127,6 +131,14 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
          helpCenterUiConfig.showContactOptions = NO;
          articleUiConfig.showContactOptions = NO;
     }
+    
+    if (options[@"sectionIds"]) {
+        [helpCenterUiConfig setGroupType:ZDKHelpCenterOverviewGroupTypeSection];
+        [helpCenterUiConfig setGroupIds:options[@"sectionIds"]];
+      
+    }
+    
+    
     UIViewController* controller = [ZDKHelpCenterUi buildHelpCenterOverviewUiWithConfigs: @[helpCenterUiConfig, articleUiConfig]];
     // controller.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle: @"Close"
     //                                                                                    style: UIBarButtonItemStylePlain
