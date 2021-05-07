@@ -109,7 +109,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         Support.INSTANCE.init(Zendesk.INSTANCE);
         AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE);
         Chat.INSTANCE.init(context, key);
-        Log.v(TAG,"init completed");
     }
 
     @ReactMethod
@@ -123,14 +122,12 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         if (options.hasKey("token")) {
           Identity identity = new JwtIdentity(options.getString("token"));
           Zendesk.INSTANCE.setIdentity(identity);
-          Log.v(TAG,"setUserIdentity with token: " + options.getString("token"));
         } else {
           String name = options.getString("name");
           String email = options.getString("email");
           Identity identity = new AnonymousIdentity.Builder()
                   .withNameIdentifier(name).withEmailIdentifier(email).build();
           Zendesk.INSTANCE.setIdentity(identity);
-          Log.v(TAG,"setUserIdentity with email: " + options.getString("email") + " and name: " + options.getString("name"));
         }
     }
 
@@ -138,7 +135,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       if(options.hasKey("botName")){
         return options.getString("botName");
       }
-        return "Chat Bot";
+      return "Chat Bot";
     }
 
     @ReactMethod
