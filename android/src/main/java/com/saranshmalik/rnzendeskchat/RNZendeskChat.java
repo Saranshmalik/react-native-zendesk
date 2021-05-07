@@ -109,6 +109,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         Support.INSTANCE.init(Zendesk.INSTANCE);
         AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE);
         Chat.INSTANCE.init(context, key);
+        Log.v(TAG,"init completed");
     }
 
     @ReactMethod
@@ -122,18 +123,27 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         if (options.hasKey("token")) {
           Identity identity = new JwtIdentity(options.getString("token"));
           Zendesk.INSTANCE.setIdentity(identity);
+          Log.v(TAG,"setUserIdentity with token: " + options.getString("token"));
         } else {
           String name = options.getString("name");
           String email = options.getString("email");
           Identity identity = new AnonymousIdentity.Builder()
                   .withNameIdentifier(name).withEmailIdentifier(email).build();
           Zendesk.INSTANCE.setIdentity(identity);
-        }   
+          Log.v(TAG,"setUserIdentity with email: " + options.getString("email") + " and name: " + options.getString("name"));
+        }
+    }
+
+    private String getBotName(ReadableMap options){
+      if(options.hasKey("botName")){
+        return options.getString("botName");
+      }
+        return "Chat Bot";
     }
 
     @ReactMethod
     public void showHelpCenter(ReadableMap options) {
-        String botName = options.hasKey("botName") ? options.getString("botName") : "Chat Bot";
+        String botName = getBotName(options);
         Activity activity = getCurrentActivity();
         if (options.hasKey("withChat")) {
             HelpCenterActivity.builder()
@@ -158,7 +168,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         setUserIdentity(options);
         setVisitorInfo(options);
         setUserIdentity(options);
-        String botName = options.getString("botName");
+        String botName = getBotName(options);
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
                 .withAgentAvailabilityEnabled(true)
                 .withOfflineFormEnabled(true)
