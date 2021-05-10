@@ -21,7 +21,7 @@ declare module 'react-native-zendesk-v2' {
   // function to register notifications token with zendesk
   export function setNotificationToken(token: string): void;
 
-  export function setUserIdentity(identity: UserIdentityToken | UserIdentityNameEmail): void;
+  export function setUserIdentity(identity: JwtIdentity | AnonymousIdentity): void;
 
   interface ChatOptions extends UserInfo {
     botName?: string
@@ -61,11 +61,11 @@ declare module 'react-native-zendesk-v2' {
     tags?: Array<string>
   }
 
-  interface UserIdentityToken {
+  interface JwtIdentity {
     token: string
   }
 
-  interface UserIdentityNameEmail {
+  interface AnonymousIdentity {
     // user's name
     name: string
     // user's email
