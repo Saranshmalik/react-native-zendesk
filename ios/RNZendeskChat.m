@@ -70,12 +70,10 @@ RCT_EXPORT_METHOD(setUserIdentity: (NSDictionary *)user) {
   if (user[@"token"]) {
     id<ZDKObjCIdentity> userIdentity = [[ZDKObjCJwt alloc] initWithToken:user[@"token"]];
     [[ZDKZendesk instance] setIdentity:userIdentity];
-    NSLog(@"Zendesk identify with token %@", user[@"token"]);
   } else {
     id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:user[@"name"] // name is nullable
                                           email:user[@"email"]]; // email is nullable
     [[ZDKZendesk instance] setIdentity:userIdentity];
-    NSLog(@"Zendesk identify with name %@ and email %@", user[@"name"],user[@"email"]);
   }
 }
 
@@ -86,7 +84,6 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
   [ZDKSupport initializeWithZendesk: [ZDKZendesk instance]];
   [ZDKChat initializeWithAccountKey:options[@"key"] appId:options[@"appId"] queue:dispatch_get_main_queue()];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
-  NSLog(@"Zendesk init completed");
 }
 
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
@@ -146,40 +143,32 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
 }
 
 - (void) startChatFunction:(NSDictionary *)options {
-    NSLog(@"Zendesk startChatFunction A");
     ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
     NSString *botName = @"ChatBot";
     if (options[@"botName"]) {
       botName = options[@"botName"];
     }
     messagingConfiguration.name = botName;
-    NSLog(@"Zendesk startChatFunction B");
     if (options[@"botImage"]) {
       messagingConfiguration.botAvatar = options[@"botImage"];
     }
-    NSLog(@"Zendesk startChatFunction D");
 
     NSError *error = nil;
     NSMutableArray *engines = [[NSMutableArray alloc] init];
     if (options[@"chatOnly"]) {
-    NSLog(@"Zendesk startChatFunction E");
       engines = @[
         (id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error]
     ];
-    NSLog(@"Zendesk startChatFunction F");
     } else {
-    NSLog(@"Zendesk startChatFunction G");
       engines = @[
         (id <ZDKEngine>) [ZDKAnswerBotEngine engineAndReturnError:&error],
         (id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error],
         (id <ZDKEngine>) [ZDKSupportEngine engineAndReturnError:&error],
       ];
-      NSLog(@"Zendesk startChatFunction H");
     }
     ZDKChatConfiguration *chatConfiguration = [[ZDKChatConfiguration alloc] init];
     chatConfiguration.isPreChatFormEnabled = YES;
     chatConfiguration.isAgentAvailabilityEnabled = YES;
-    NSLog(@"Zendesk startChatFunction I");
     UIViewController *chatController =[ZDKMessaging.instance buildUIWithEngines:engines
                                                                         configs:@[messagingConfiguration, chatConfiguration]
                                                                             error:&error];
@@ -191,7 +180,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
                                                                                       target: self
                                                                                       action: @selector(chatClosedClicked)];
 
-    NSLog(@"Zendesk startChatFunction L");
         UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
         while (topController.presentedViewController) {
             topController = topController.presentedViewController;
@@ -199,7 +187,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
 
         UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: chatController];
         [topController presentViewController:navControl animated:YES completion:nil];
-    NSLog(@"Zendesk startChatFunction M");
 }
 
 - (void) chatClosedClicked {
