@@ -4,14 +4,7 @@ package com.saranshmalik.rnzendeskchat;
 import android.app.Activity;
 import android.content.Context;
 
-import android.graphics.Color;
-import android.os.Build;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -20,17 +13,10 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
 import java.lang.String;
-
-import javax.annotation.Nullable;
 import zendesk.chat.Chat;
 import zendesk.chat.ChatConfiguration;
 import zendesk.chat.ChatEngine;
 import zendesk.chat.ChatProvider;
-import zendesk.chat.ChatSessionStatus;
-import zendesk.chat.ChatState;
-import zendesk.chat.ObservationScope;
-import zendesk.chat.Observer;
-import zendesk.chat.PreChatFormFieldStatus;
 import zendesk.chat.ProfileProvider;
 import zendesk.chat.PushNotificationsProvider;
 import zendesk.chat.Providers;
@@ -43,7 +29,6 @@ import zendesk.core.Zendesk;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
 import zendesk.support.guide.ViewArticleActivity;
-import zendesk.support.requestlist.RequestListActivity;
 import zendesk.answerbot.AnswerBot;
 import zendesk.answerbot.AnswerBotEngine;
 import zendesk.support.SupportEngine;
@@ -61,6 +46,13 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "RNZendeskChat";
+  }
+
+  private String getBotName(ReadableMap options){
+    if(options.hasKey("botName")){
+      return options.getString("botName");
+    }
+    return "Chat Bot";
   }
 
   @ReactMethod
@@ -108,7 +100,7 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
         Zendesk.INSTANCE.init(context, url, appId, clientId);
         Support.INSTANCE.init(Zendesk.INSTANCE);
         AnswerBot.INSTANCE.init(Zendesk.INSTANCE, Support.INSTANCE);
-        Chat.INSTANCE.init(context, key);
+        initChat(key);
     }
 
     @ReactMethod
@@ -133,7 +125,6 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void showHelpCenter(ReadableMap options) {
-        String botName = options.hasKey("botName") ? options.getString("botName") : "Chat Bot";
         Activity activity = getCurrentActivity();
         if (options.hasKey("withChat")) {
             HelpCenterActivity.builder()
@@ -154,11 +145,10 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startChat(ReadableMap options) {
-        Providers providers = Chat.INSTANCE.providers();
         setUserIdentity(options);
         setVisitorInfo(options);
         setUserIdentity(options);
-        String botName = options.getString("botName");
+        String botName = getBotName(options);
         ChatConfiguration chatConfiguration = ChatConfiguration.builder()
                 .withAgentAvailabilityEnabled(true)
                 .withOfflineFormEnabled(true)
