@@ -23,6 +23,8 @@ declare module 'react-native-zendesk-v2' {
 
   export function setUserIdentity(identity: JwtIdentity | AnonymousIdentity): void;
 
+  export function resetUserIdentity(): void;
+
   interface ChatOptions extends UserInfo {
     botName?: string
     // boolean value if you want just chat sdk or want to use all the sdk like support, answer bot and chat
