@@ -33,9 +33,9 @@ repositories {
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
-    api group: 'com.zendesk', name: 'chat', version: '2.0.0'
-    api group: 'com.zendesk', name: 'answerbot', version: '2.0.0'
-    api group: 'com.zendesk', name: 'messaging', version: '4.2.1'
-    api group: 'com.zendesk', name: 'support', version: '4.0.0'
+    api group: 'com.zendesk', name: 'chat', version: '3.1.0'
+    api group: 'com.zendesk', name: 'answerbot', version: '3.0.1'
+    api group: 'com.zendesk', name: 'messaging', version: '5.1.0'
+    api group: 'com.zendesk', name: 'support', version: '5.0.2'
 }
   

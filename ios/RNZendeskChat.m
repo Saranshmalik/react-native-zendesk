@@ -1,10 +1,12 @@
 
 #import "RNZendeskChat.h"
 #import <AnswerBotSDK/AnswerBotSDK.h>
+#import <MessagingSDK/MessagingSDK.h>
+#import <MessagingAPI/MessagingAPI.h>
+#import <SDKConfigurations/SDKConfigurations.h>
 #import <AnswerBotProvidersSDK/AnswerBotProvidersSDK.h>
 #import <ChatSDK/ChatSDK.h>
 #import <ChatProvidersSDK/ChatProvidersSDK.h>
-#import <MessagingSDK/MessagingSDK.h>
 #import <CommonUISDK/CommonUISDK.h>
 #import <SupportSDK/SupportSDK.h>
 #import <SupportProvidersSDK/SupportProvidersSDK.h>
@@ -26,7 +28,7 @@ RCT_EXPORT_METHOD(setVisitorInfo:(NSDictionary *)options) {
                                                 email:options[@"email"]
                                                 phoneNumber:options[@"phone"]];
   ZDKChat.instance.configuration = config;
-  
+
   NSLog(@"Setting visitor info: department: %@ tags: %@, email: %@, name: %@, phone: %@", config.department, config.tags, config.visitorInfo.email, config.visitorInfo.name, config.visitorInfo.phoneNumber);
 }
 
@@ -80,8 +82,8 @@ RCT_EXPORT_METHOD(init:(NSDictionary *)options) {
       clientId: options[@"clientId"]
       zendeskUrl: options[@"url"]];
   [ZDKSupport initializeWithZendesk: [ZDKZendesk instance]];
+  [ZDKChat initializeWithAccountKey:options[@"key"] appId:options[@"appId"] queue:dispatch_get_main_queue()];
   [ZDKAnswerBot initializeWithZendesk:[ZDKZendesk instance] support:[ZDKSupport instance]];
-  [ZDKChat initializeWithAccountKey:options[@"key"] queue:dispatch_get_main_queue()];
 }
 
 RCT_EXPORT_METHOD(initChat:(NSString *)key) {
@@ -132,24 +134,21 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
     //                                                                                    style: UIBarButtonItemStylePlain
     //                                                                                   target: self
     //                                                                                   action: @selector(chatClosedClicked)];
-
     UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
     while (topController.presentedViewController) {
         topController = topController.presentedViewController;
     }
-
     UINavigationController *navControl = [[UINavigationController alloc] initWithRootViewController: controller];
     [topController presentViewController:navControl animated:YES completion:nil];
 }
 
 - (void) startChatFunction:(NSDictionary *)options {
-    ZDKMessagingConfiguration *messagingConfiguration = [ZDKMessagingConfiguration new];
+    ZDKMessagingConfiguration *messagingConfiguration = [[ZDKMessagingConfiguration alloc] init];
     NSString *botName = @"ChatBot";
     if (options[@"botName"]) {
       botName = options[@"botName"];
     }
     messagingConfiguration.name = botName;
-
     if (options[@"botImage"]) {
       messagingConfiguration.botAvatar = options[@"botImage"];
     }
@@ -164,13 +163,12 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
       engines = @[
         (id <ZDKEngine>) [ZDKAnswerBotEngine engineAndReturnError:&error],
         (id <ZDKEngine>) [ZDKChatEngine engineAndReturnError:&error],
-        (id <ZDKEngine>) [ZDKSupportEngine engineAndReturnError:&error], 
+        (id <ZDKEngine>) [ZDKSupportEngine engineAndReturnError:&error],
       ];
     }
     ZDKChatConfiguration *chatConfiguration = [[ZDKChatConfiguration alloc] init];
     chatConfiguration.isPreChatFormEnabled = YES;
     chatConfiguration.isAgentAvailabilityEnabled = YES;
-
     UIViewController *chatController =[ZDKMessaging.instance buildUIWithEngines:engines
                                                                         configs:@[messagingConfiguration, chatConfiguration]
                                                                             error:&error];
@@ -181,7 +179,6 @@ RCT_EXPORT_METHOD(setNotificationToken:(NSData *)deviceToken) {
                                                                                        style: UIBarButtonItemStylePlain
                                                                                       target: self
                                                                                       action: @selector(chatClosedClicked)];
-
 
         UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
         while (topController.presentedViewController) {
