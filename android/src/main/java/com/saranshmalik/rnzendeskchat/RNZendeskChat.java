@@ -14,6 +14,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.zendesk.logger.Logger;
 
 import java.lang.String;
+import java.util.ArrayList;
+import java.util.List;
+
 import zendesk.chat.Chat;
 import zendesk.chat.ChatConfiguration;
 import zendesk.chat.ChatEngine;
@@ -22,17 +25,20 @@ import zendesk.chat.ProfileProvider;
 import zendesk.chat.PushNotificationsProvider;
 import zendesk.chat.Providers;
 import zendesk.chat.VisitorInfo;
+import zendesk.configurations.Configuration;
 import zendesk.core.JwtIdentity;
 import zendesk.core.AnonymousIdentity;
 import zendesk.core.Identity;
 import zendesk.messaging.MessagingActivity;
 import zendesk.core.Zendesk;
+import zendesk.support.CustomField;
 import zendesk.support.Support;
 import zendesk.support.guide.HelpCenterActivity;
 import zendesk.support.guide.ViewArticleActivity;
 import zendesk.answerbot.AnswerBot;
 import zendesk.answerbot.AnswerBotEngine;
 import zendesk.support.SupportEngine;
+import zendesk.support.request.RequestActivity;
 
 public class RNZendeskChat extends ReactContextBaseJavaModule {
 
@@ -56,6 +62,22 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
     return "Chat Bot";
   }
 
+  /* helper methods */
+  private Boolean getBoolean(ReadableMap options, String key){
+    if(options.hasKey(key)){
+      return options.getBoolean(key);
+    }
+    return null;
+  }
+
+  private String getString(ReadableMap options, String key){
+    if(options.hasKey(key)){
+      return options.getString(key);
+    }
+    return null;
+  }
+
+
   @ReactMethod
   public void setVisitorInfo(ReadableMap options) {
 
@@ -75,19 +97,23 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
       return;
     }
     VisitorInfo.Builder builder = VisitorInfo.builder();
-    if (options.hasKey("name")) {
-      builder = builder.withName(options.getString("name"));
+    String name = getString(options,"name");
+    String email = getString(options,"email");
+    String phone = getString(options,"phone");
+    String department = getString(options,"department");
+    if (name != null) {
+      builder = builder.withName(name);
     }
-    if (options.hasKey("email")) {
-      builder = builder.withEmail(options.getString("email"));
+    if (email != null) {
+      builder = builder.withEmail(email);
     }
-    if (options.hasKey("phone")) {
-      builder = builder.withPhoneNumber(options.getString("phone"));
+    if (phone != null) {
+      builder = builder.withPhoneNumber(phone);
     }
     VisitorInfo visitorInfo = builder.build();
     profileProvider.setVisitorInfo(visitorInfo, null);
-    if (options.hasKey("department"))
-      chatProvider.setDepartment(options.getString("department"), null);
+    if (department != null)
+      chatProvider.setDepartment(department, null);
 
   }
 
@@ -123,8 +149,9 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void setUserIdentity(ReadableMap options) {
-    if (options.hasKey("token")) {
-      Identity identity = new JwtIdentity(options.getString("token"));
+    String token = getString(options,"token");
+    if (token != null) {
+      Identity identity = new JwtIdentity(token);
       Zendesk.INSTANCE.setIdentity(identity);
     } else {
       String name = options.getString("name");
@@ -139,11 +166,22 @@ public class RNZendeskChat extends ReactContextBaseJavaModule {
   @ReactMethod
   public void showHelpCenter(ReadableMap options) {
     Activity activity = getCurrentActivity();
-    if (options.hasKey("withChat")) {
+    /*
+    // config must be passed as 2nd parameter to show method
+    List<CustomField> customFields = new ArrayList<>();
+    customFields.add(new CustomField(360028434358L, "testValoreDaApp"));
+    Configuration config = RequestActivity.builder()
+      .withCustomFields(customFields)
+      .withTags("tag1","tag2")
+      .config();
+     */
+    Boolean withChat = getBoolean(options,"withChat");
+    Boolean disableTicketCreation = getBoolean(options,"withChat");
+    if (withChat) {
       HelpCenterActivity.builder()
         .withEngines(ChatEngine.engine())
         .show(activity);
-    } else if (options.hasKey("disableTicketCreation")) {
+    } else if (disableTicketCreation) {
       HelpCenterActivity.builder()
         .withContactUsButtonVisible(false)
         .withShowConversationsMenuButton(false)
