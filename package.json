@@ -1,6 +1,6 @@
 {
   "name": "react-native-zendesk-v2",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "React native wrapper for Zendesk Unified SDK",
   "main": "index.js",
   "scripts": {
